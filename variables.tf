@@ -1,14 +1,3 @@
-/* data from elsewhere
-variable "name"                   var.name full name
-variable "cluster_name"           Pull from var.ecs_cluster_arn or pass in var for name
-variable "service_name"           Add ouput name to ecs_service
-# make local ?
-variable "queue_name"             "${element(module.sqs.queues, index(module.sqs.queue_name_bases, var.name))}"
-/**/
-variable "name" {
-  description = ""
-}
-
 variable "cluster_name" {
   description = "Name of ECS cluster that service is in"
 }

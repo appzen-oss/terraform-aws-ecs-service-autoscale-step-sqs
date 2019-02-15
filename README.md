@@ -1,11 +1,12 @@
-# terraform-#PROVIDER#-#MODULE#
+# terraform-aws-ecs-service-autoscale-step-sqs
 
-[![CircleCI](https://circleci.com/gh/#ORG#/terraform-#PROVIDER#-#MODULE#.svg?style=svg)](https://circleci.com/gh/#ORG#/terraform-#PROVIDER#-#MODULE#)
-[![Github release](https://img.shields.io/github/release/#ORG#/terraform-#PROVIDER#-#MODULE#.svg)](https://github.com/#ORG#/terraform-#PROVIDER#-#MODULE#/releases)
+[![CircleCI](https://circleci.com/gh/appzen-oss/terraform-aws-ecs-service-autoscale-step-sqs.svg?style=svg)](https://circleci.com/gh/appzen-oss/terraform-aws-ecs-service-autoscale-step-sqs)
+[![Github release](https://img.shields.io/github/release/appzen-oss/terraform-aws-ecs-service-autoscale-step-sqs.svg)](https://github.com/appzen-oss/terraform-aws-ecs-service-autoscale-step-sqs/releases)
 
-Terraform module to
+Terraform module to manage application autoscaling for an ECS service based
+on a SQS queue's length
 
-[Terraform registry](https://registry.terraform.io/modules/#ORG#/#MODULE#/#PROVIDER#)
+[Terraform registry](https://registry.terraform.io/modules/appzen-oss/ecs-service-autoscale-step-sqs/aws)
 
 ## Usage
 
@@ -13,7 +14,7 @@ Terraform module to
 
 ```hcl
 module "" {
-  source        = "#ORG#/#MODULE#/#PROVIDER#"
+  source        = "appzen-oss/ecs-service-autoscale-step-sqs/aws"
   version       = "0.0.1"
 }
 ```
@@ -32,7 +33,6 @@ module "" {
 | low\_threshold | The value against which the low statistic is compared | string | `"100"` | no |
 | max\_capacity | Maximum number of tasks to scale to | string | `"5"` | no |
 | min\_capacity | Minimum number of tasks to scale to | string | `"0"` | no |
-| name | /* data from elsewhere variable "name"                   var.name full name variable "cluster_name"           Pull from var.ecs_cluster_arn or pass in var for name variable "service_name"           Add ouput name to ecs_service # make local ? variable "queue_name"             "${element(module.sqs.queues, index(module.sqs.queue_name_bases, var.name))}" /**/ | string | n/a | yes |
 | queue\_name | Name of SQS queue to monitor | string | n/a | yes |
 | scale\_down\_cooldown | The amount of time, in seconds, after a scaling down completes and before the next scaling activity can start | string | `"60"` | no |
 | scale\_down\_count | The number of members by which to scale down, when the adjustment bounds are breached. Should always be negative value | string | `"-3"` | no |
