@@ -1,0 +1,175 @@
+version: 2
+
+# TODO: centralize full configuration. Figure out how
+#   ?? Each step as a separate script that is downloaded and run ??
+#   ?? CircleCI feature request to supoort include from remote sources
+# More Markdown terraform_testing
+# Python testing. Add doc and test that too
+# circleci/python: Both 2 and 3?
+# if src/requirements.txt get version from *.tf and test
+#   Style+: flake8 + hacking?, prospector?
+#   Security: bandit, RATS,
+
+# This file uses YAML anchors to deduplicate steps
+# see https://circleci.com/blog/circleci-hacks-reuse-yaml-in-your-circleci-config-with-yaml/
+# and https://learnxinyminutes.com/docs/yaml/
+
+.steps_template: &steps_terraform_static_analysis
+  steps:
+    - checkout
+    - run:
+        name: "Check: Validate tf files (terraform validate)"
+        command: |
+            find . -type f -name "*.tf" -exec dirname {} \;|sort -u | while read m; do (terraform validate -check-variables=false "$m" && echo "√ $m") || exit 1 ; done
+    - run:
+        name: "Check: Terraform formatting (terraform fmt)"
+        command: |
+            if [ `terraform fmt --list=true -diff=true -write=false | tee format-issues | wc -c` -ne 0 ]; then
+              echo "Some terraform files need be formatted, run 'terraform fmt' to fix"
+              echo "Formatting issues:"
+              cat format-issues
+              exit 1
+            fi
+    - run:
+        name: "Install: tflint"
+        command: |
+            apk update
+            apk add jq wget
+            # Get latest version of tflint (v0.7.0 test if still need to exclude modules. Any other changes)
+            pkg_arch=linux_amd64
+            dl_url=$(curl -s https://api.github.com/repos/wata727/tflint/releases/latest | jq -r ".assets[] | select(.name | test(\"${pkg_arch}\")) | .browser_download_url")
+            wget ${dl_url}
+            unzip tflint_linux_amd64.zip
+            mkdir -p /usr/local/tflint/bin
+            # Setup PATH for later run steps - ONLY for Bash and not in Bash
+            #echo 'export PATH=/usr/local/tflint/bin:$PATH' >> $BASH_ENV
+            echo "Installing tflint..."
+            install tflint /usr/local/tflint/bin
+            echo "Configuring tflint..."
+            tf_ver=$(terraform version | awk 'FNR <= 1' | cut -dv -f2)
+            echo -e "\tConfig for terraform version: ${tf_ver}"
+            if [ -f '.tflint.hcl' ]; then
+              sed -i "/terraform_version =/s/\".*\"/\"${tf_ver}\"/" .tflint.hcl
+            else
+              {
+              echo -e "config {\nterraform_version = \"${tf_ver}\"\ndeep_check = true\nignore_module = {"
+              for module in $(grep -h '[^a-zA-Z]source[ =]' *.tf | sed -r 's/.*=\s+//' | sort -u); do
+                # if not ^"../
+                echo "${module} = true"
+              done
+              echo -e "}\n}\n"
+              } > .tflint.hcl
+              fi
+            echo "tflint configuration:"
+            cat .tflint.hcl
+    - run:
+        # Not supporting modules from registry ?? v0.5.4
+        # For now, must ignore in config file
+        name: "Check: tflint"
+        command: |
+            #echo "Initializing terraform..."
+            #terraform init -input=false
+            echo "Running tflint..."
+            /usr/local/tflint/bin/tflint --version
+            /usr/local/tflint/bin/tflint
+
+jobs:
+  ###
+  ### Documentation testing: Markdown
+  ###
+  # Markdown Lint https://github.com/DavidAnson/markdownlint
+  # CLI https://github.com/igorshubovych/markdownlint-cli
+  # https://hub.docker.com/r/circleci/node/tags/
+  markdown_lint_node:
+    docker:
+      - image: circleci/node:10.5.0
+    steps:
+      - checkout
+      - run:
+          name: "Install: markdown lint (node.js)"
+          command: |
+              sudo npm install -g markdownlint-cli
+      - run:
+          name: "Check: markdown lint (node.js)"
+          command: |
+              #markdownlint --help
+              echo -n "markdownlint version: "
+              markdownlint --version
+              markdownlint ./
+  # Markdown Lint https://github.com/markdownlint/markdownlint
+  # https://hub.docker.com/r/circleci/ruby/tags/
+  markdown_lint_ruby:
+    docker:
+      - image: circleci/ruby:2.5.1
+    steps:
+      - checkout
+      - run:
+          name: "Install: markdown lint (ruby)"
+          command: |
+              gem install mdl
+      - run:
+          name: "Check: markdown lint (ruby)"
+          command: |
+              #mdl --help
+              echo -n "mdl version: "
+              mdl --version
+              mdl .
+  markdown_proofer:
+    docker:
+      - image: circleci/golang:1.10
+        entrypoint: /bin/sh
+    steps:
+      - checkout
+      - run:
+          name: "Install: markdown proofer"
+          command: |
+              # Get latest version
+              pkg_arch=linux_amd64
+              # Prerelease, so latest doesn't work yet
+              #dl_url=$(curl -s https://api.github.com/repos/felicianotech/md-proofer/releases/latest | jq -r ".assets[] | select(.name | test(\"${pkg_arch}\")) | .browser_download_url")
+              dl_url='https://github.com/felicianotech/md-proofer/releases/download/v0.2.0/md-proofer--v0.2.0--linux-amd64.tar.gz'
+              wget ${dl_url}
+              tar xzf md-proofer--v0.2.0--linux-amd64.tar.gz
+      - run:
+          name: "Check: markdown proofer"
+          command: |
+              ./md-proofer version
+              #./md-proofer lint --help
+              # Will this find all *.md in directory structure or need to run in each directory ?
+              if ./md-proofer lint ./; then
+                echo "md-proofer passed"
+              else
+                echo "md-proofer failed"
+              fi
+  ###
+  ### Terraform testing
+  ###
+  terraform_0_11_3:
+    docker:
+      - image: hashicorp/terraform:0.11.3
+        entrypoint: /bin/sh
+    <<: *steps_terraform_static_analysis
+
+  terraform_0_11_7:
+    docker:
+      - image: hashicorp/terraform:0.11.7
+        entrypoint: /bin/sh
+    <<: *steps_terraform_static_analysis
+
+  terraform_latest:
+    docker:
+      - image: hashicorp/terraform:latest
+        entrypoint: /bin/sh
+    <<: *steps_terraform_static_analysis
+
+workflows:
+  version: 2
+  terraform_testing:
+    jobs:
+      - markdown_lint_node
+      - markdown_lint_ruby
+      # Currently doesn't do anything that markdownlint node doesn't do
+      #- markdown_proofer
+      - terraform_0_11_3
+      - terraform_0_11_7
+      - terraform_latest

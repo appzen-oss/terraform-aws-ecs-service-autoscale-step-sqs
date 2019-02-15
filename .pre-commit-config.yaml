@@ -1,0 +1,47 @@
+# See http://pre-commit.com for more information
+# See http://pre-commit.com/hooks.html for more hooks
+# To update to all latest tagged versions run:
+#     pre-commit autoupdate
+# TODO: write dependencies install instructions and put in each of
+#       my pre-commit repos. Decide where to put for others
+repos:
+  - repo: https://github.com/devops-workflow/pre-commit-terraform
+    rev: v1.13.3
+    hooks:
+      - id: terraform_tools
+      - id: terraform_template
+        args: [--owner=appzen-oss, --repo=terraform-template]
+      - id: terraform_fmt
+      - id: terraform_docs
+      - id: terraform_graph
+      - id: tflint
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v1.4.0
+    hooks:
+      - id: check-case-conflict
+      - id: check-executables-have-shebangs
+      - id: check-merge-conflict
+      - id: check-yaml
+      - id: detect-aws-credentials
+      - id: detect-private-key
+      - id: mixed-line-ending
+        args: [--fix=lf]
+      - id: trailing-whitespace
+        # TODO: test these
+        # check-json
+        # pretty-format-json
+  #- repo: https://github.com/jumanjihouse/pre-commit-hooks
+  #  # Requires: shellcheck, shfmt
+  #  rev: 1.8.0
+  #  hooks:
+  #    - id: shellcheck
+  #    - id: shfmt
+  #- repo: git://github.com/detailyang/pre-commit-shell
+  #  # Requires: shellcheck
+  #  rev: 1.0.2
+  #  hooks:
+  #    - id: shell-lint
+# TODO:
+# add bashate shell code style https://github.com/openstack-dev/bashate
+# gitlint https://github.com/jorisroovers/gitlint
+# Create new repo and hook for markdown linters
