@@ -12,11 +12,33 @@ Look at prod-semzen-ocr
 
 # Outputs ?
 
+module "label" {
+  source     = "appzen-oss/label/local"
+  version    = "0.3.1"
+  attributes = "${var.attributes}"
+  component  = "${var.component}"
+  delimiter  = "${var.delimiter}"
+
+  #enabled       = "${module.enabled.value}"
+  environment   = "${var.environment}"
+  monitor       = "${var.monitor}"
+  name          = "${var.name}"
+  namespace-env = "${var.namespace-env}"
+  namespace-org = "${var.namespace-org}"
+  organization  = "${var.organization}"
+  owner         = "${var.owner}"
+  product       = "${var.product}"
+  service       = "${var.service}"
+  tags          = "${var.tags}"
+  team          = "${var.team}"
+}
+
 ##
 ## Autoscaling IAM
 ##
 resource "aws_iam_role" "ecs_service_autoscale" {
-  name = "${var.service_name}-ecs-service-autoscale"
+  name = "${module.label.id}-ecs-service-autoscale"
+  tags = "${module.label.tags}"
 
   assume_role_policy = <<EOF
 {
@@ -58,7 +80,7 @@ resource "aws_appautoscaling_target" "target" {
 ##
 resource "aws_appautoscaling_policy" "scale_up" {
   depends_on         = ["aws_appautoscaling_target.target"]
-  name               = "${var.service_name}-scale-up-queue"
+  name               = "${module.label.id}-scale-up-queue"
   resource_id        = "service/${var.cluster_name}/${var.service_name}"
   scalable_dimension = "ecs:service:DesiredCount"
   service_namespace  = "ecs"
@@ -77,7 +99,7 @@ resource "aws_appautoscaling_policy" "scale_up" {
 
 resource "aws_appautoscaling_policy" "scale_down" {
   depends_on         = ["aws_appautoscaling_target.target"]
-  name               = "${var.service_name}-scale-down-queue"
+  name               = "${module.label.id}-scale-down-queue"
   resource_id        = "service/${var.cluster_name}/${var.service_name}"
   scalable_dimension = "ecs:service:DesiredCount"
   service_namespace  = "ecs"
@@ -98,8 +120,8 @@ resource "aws_appautoscaling_policy" "scale_down" {
 ## Cloudwatch Alarms
 ##
 resource "aws_cloudwatch_metric_alarm" "service_queue_high" {
-  alarm_name          = "${var.service_name}-queue-count-high"
-  alarm_description   = "This alarm monitors ${var.service_name} Queue count utilization for scaling up"
+  alarm_name          = "${module.label.id}-queue-count-high"
+  alarm_description   = "This alarm monitors ${var.queue_name} Queue count utilization for scaling up"
   comparison_operator = "GreaterThanOrEqualToThreshold"
   evaluation_periods  = "1"
   metric_name         = "ApproximateNumberOfMessagesVisible"
@@ -116,8 +138,8 @@ resource "aws_cloudwatch_metric_alarm" "service_queue_high" {
 
 # A CloudWatch alarm that monitors CPU utilization of containers for scaling down
 resource "aws_cloudwatch_metric_alarm" "service_queue_low" {
-  alarm_name          = "${var.service_name}-queue-count-low"
-  alarm_description   = "This alarm monitors ${var.service_name} Queue count utilization for scaling down"
+  alarm_name          = "${module.label.id}-queue-count-low"
+  alarm_description   = "This alarm monitors ${var.queue_name} Queue count utilization for scaling down"
   comparison_operator = "LessThanThreshold"
   evaluation_periods  = "1"
   metric_name         = "ApproximateNumberOfMessagesVisible"
