@@ -86,12 +86,13 @@ resource "aws_appautoscaling_policy" "scale_up" {
   service_namespace  = "ecs"
 
   step_scaling_policy_configuration = {
-    cooldown                = 60
-    adjustment_type         = "ChangeInCapacity"
-    metric_aggregation_type = "Average"
+    cooldown                 = "${var.scale_up_cooldown}"
+    adjustment_type          = "${var.adjustment_type}"
+    metric_aggregation_type  = "Average"
+    min_adjustment_magnitude = "${var.scale_up_min_adjustment_magnitude}"
 
     step_adjustment {
-      metric_interval_lower_bound = 0
+      metric_interval_lower_bound = "${var.scale_up_lower_bound}"
       scaling_adjustment          = "${var.scale_up_count}"
     }
   }
@@ -105,12 +106,13 @@ resource "aws_appautoscaling_policy" "scale_down" {
   service_namespace  = "ecs"
 
   step_scaling_policy_configuration = {
-    cooldown                = 60
-    adjustment_type         = "ChangeInCapacity"
-    metric_aggregation_type = "Average"
+    cooldown                 = "${var.scale_down_cooldown}"
+    adjustment_type          = "${var.adjustment_type}"
+    metric_aggregation_type  = "Average"
+    min_adjustment_magnitude = "${var.scale_down_min_adjustment_magnitude}"
 
     step_adjustment {
-      metric_interval_lower_bound = 0
+      metric_interval_lower_bound = "${var.scale_down_lower_bound}"
       scaling_adjustment          = "${var.scale_down_count}"
     }
   }

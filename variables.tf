@@ -1,3 +1,8 @@
+variable "adjustment_type" {
+  description = "Autoscaling policy adjustment type (ChangeInCapacity, PercentChangeInCapacity)"
+  default     = "ChangeInCapacity"
+}
+
 variable "cluster_name" {
   description = "Name of ECS cluster that service is in"
 }
@@ -65,6 +70,11 @@ variable "scale_down_lower_bound" {
   default     = "0"
 }
 
+variable "scale_down_min_adjustment_magnitude" {
+  description = "Minimum number of tasks to scale down at a time "
+  default     = "10"
+}
+
 variable "scale_up_cooldown" {
   description = "The amount of time, in seconds, after a scaling up completes and before the next scaling up can start"
   default     = "60"
@@ -78,4 +88,9 @@ variable "scale_up_count" {
 variable "scale_up_lower_bound" {
   description = "The lower bound for the difference between the alarm threshold and the CloudWatch metric. Without a value, AWS will treat this bound as negative infinity"
   default     = "0"
+}
+
+variable "scale_up_min_adjustment_magnitude" {
+  description = "Minimum number of tasks to scale up at a time "
+  default     = "10"
 }
