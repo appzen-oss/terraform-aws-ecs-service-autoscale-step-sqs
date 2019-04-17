@@ -67,6 +67,11 @@ variable "scale_down_count" {
 
 variable "scale_down_lower_bound" {
   description = "The lower bound for the difference between the alarm threshold and the CloudWatch metric. Without a value, AWS will treat this bound as negative infinity"
+  default     = ""
+}
+
+variable "scale_down_upper_bound" {
+  description = "The upper bound for the difference between the alarm threshold and the CloudWatch metric. Without a value, AWS will treat this bound as infinity"
   default     = "0"
 }
 
@@ -88,6 +93,11 @@ variable "scale_up_count" {
 variable "scale_up_lower_bound" {
   description = "The lower bound for the difference between the alarm threshold and the CloudWatch metric. Without a value, AWS will treat this bound as negative infinity"
   default     = "0"
+}
+
+variable "scale_up_upper_bound" {
+  description = "The upper bound for the difference between the alarm threshold and the CloudWatch metric. Without a value, AWS will treat this bound as infinity"
+  default     = ""
 }
 
 variable "scale_up_min_adjustment_magnitude" {

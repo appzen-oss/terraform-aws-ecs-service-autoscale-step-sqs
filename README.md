@@ -48,12 +48,14 @@ module "" {
 | queue\_name | Name of SQS queue to monitor | string | n/a | yes |
 | scale\_down\_cooldown | The amount of time, in seconds, after a scaling down completes and before the next scaling activity can start | string | `"60"` | no |
 | scale\_down\_count | The number of members by which to scale down, when the adjustment bounds are breached. Should always be negative value | string | `"-3"` | no |
-| scale\_down\_lower\_bound | The lower bound for the difference between the alarm threshold and the CloudWatch metric. Without a value, AWS will treat this bound as negative infinity | string | `"0"` | no |
+| scale\_down\_lower\_bound | The lower bound for the difference between the alarm threshold and the CloudWatch metric. Without a value, AWS will treat this bound as negative infinity | string | `""` | no |
 | scale\_down\_min\_adjustment\_magnitude | Minimum number of tasks to scale down at a time | string | `"10"` | no |
+| scale\_down\_upper\_bound | The upper bound for the difference between the alarm threshold and the CloudWatch metric. Without a value, AWS will treat this bound as infinity | string | `"0"` | no |
 | scale\_up\_cooldown | The amount of time, in seconds, after a scaling up completes and before the next scaling up can start | string | `"60"` | no |
 | scale\_up\_count | The number of members by which to scale up, when the adjustment bounds are breached. Should always be positive value | string | `"5"` | no |
 | scale\_up\_lower\_bound | The lower bound for the difference between the alarm threshold and the CloudWatch metric. Without a value, AWS will treat this bound as negative infinity | string | `"0"` | no |
 | scale\_up\_min\_adjustment\_magnitude | Minimum number of tasks to scale up at a time | string | `"10"` | no |
+| scale\_up\_upper\_bound | The upper bound for the difference between the alarm threshold and the CloudWatch metric. Without a value, AWS will treat this bound as infinity | string | `""` | no |
 | service | TAG: Application (microservice) name | string | `"UNDEF-ECSAutoScaleSQS"` | no |
 | service\_name | Name of ECS service to autoscale | string | n/a | yes |
 | tags | A map of additional tags | map | `<map>` | no |

@@ -81,6 +81,7 @@ resource "aws_appautoscaling_target" "target" {
 resource "aws_appautoscaling_policy" "scale_up" {
   depends_on         = ["aws_appautoscaling_target.target"]
   name               = "${module.label.id}-scale-up-queue"
+  policy_type        = "StepScaling"
   resource_id        = "service/${var.cluster_name}/${var.service_name}"
   scalable_dimension = "ecs:service:DesiredCount"
   service_namespace  = "ecs"
@@ -93,6 +94,7 @@ resource "aws_appautoscaling_policy" "scale_up" {
 
     step_adjustment {
       metric_interval_lower_bound = "${var.scale_up_lower_bound}"
+      metric_interval_upper_bound = "${var.scale_up_upper_bound}"
       scaling_adjustment          = "${var.scale_up_count}"
     }
   }
@@ -101,6 +103,7 @@ resource "aws_appautoscaling_policy" "scale_up" {
 resource "aws_appautoscaling_policy" "scale_down" {
   depends_on         = ["aws_appautoscaling_target.target"]
   name               = "${module.label.id}-scale-down-queue"
+  policy_type        = "StepScaling"
   resource_id        = "service/${var.cluster_name}/${var.service_name}"
   scalable_dimension = "ecs:service:DesiredCount"
   service_namespace  = "ecs"
@@ -113,6 +116,7 @@ resource "aws_appautoscaling_policy" "scale_down" {
 
     step_adjustment {
       metric_interval_lower_bound = "${var.scale_down_lower_bound}"
+      metric_interval_upper_bound = "${var.scale_down_upper_bound}"
       scaling_adjustment          = "${var.scale_down_count}"
     }
   }
