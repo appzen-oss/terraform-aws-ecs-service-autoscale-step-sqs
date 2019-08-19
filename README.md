@@ -24,7 +24,8 @@ module "" {
 
 | Name | Description | Type | Default | Required |
 |------|-------------|:----:|:-----:|:-----:|
-| adjustment\_type | Autoscaling policy adjustment type (ChangeInCapacity, PercentChangeInCapacity) | string | `"ChangeInCapacity"` | no |
+| adjustment\_type\_down | Autoscaling policy down adjustment type (ChangeInCapacity, ExactCapacity, PercentChangeInCapacity) | string | `"ChangeInCapacity"` | no |
+| adjustment\_type\_up | Autoscaling policy up adjustment type (ChangeInCapacity, ExactCapacity, PercentChangeInCapacity) | string | `"ChangeInCapacity"` | no |
 | attributes | Suffix name with additional attributes (policy, role, etc.) | list | `<list>` | no |
 | cluster\_name | Name of ECS cluster that service is in | string | n/a | yes |
 | component | TAG: Underlying, dedicated piece of service (Cache, DB, ...) | string | `"UNDEF-ECSAutoScaleSQS"` | no |

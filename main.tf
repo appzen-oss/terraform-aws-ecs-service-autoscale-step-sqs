@@ -88,7 +88,7 @@ resource "aws_appautoscaling_policy" "scale_up" {
 
   step_scaling_policy_configuration = {
     cooldown                 = "${var.scale_up_cooldown}"
-    adjustment_type          = "${var.adjustment_type}"
+    adjustment_type          = "${var.adjustment_type_up}"
     metric_aggregation_type  = "Average"
     min_adjustment_magnitude = "${var.scale_up_min_adjustment_magnitude}"
 
@@ -110,7 +110,7 @@ resource "aws_appautoscaling_policy" "scale_down" {
 
   step_scaling_policy_configuration = {
     cooldown                 = "${var.scale_down_cooldown}"
-    adjustment_type          = "${var.adjustment_type}"
+    adjustment_type          = "${var.adjustment_type_down}"
     metric_aggregation_type  = "Average"
     min_adjustment_magnitude = "${var.scale_down_min_adjustment_magnitude}"
 

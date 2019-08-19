@@ -1,5 +1,10 @@
-variable "adjustment_type" {
-  description = "Autoscaling policy adjustment type (ChangeInCapacity, PercentChangeInCapacity)"
+variable "adjustment_type_down" {
+  description = "Autoscaling policy down adjustment type (ChangeInCapacity, PercentChangeInCapacity)"
+  default     = "ChangeInCapacity"
+}
+
+variable "adjustment_type_up" {
+  description = "Autoscaling policy up adjustment type (ChangeInCapacity, PercentChangeInCapacity)"
   default     = "ChangeInCapacity"
 }
 
@@ -77,7 +82,7 @@ variable "scale_down_upper_bound" {
 
 variable "scale_down_min_adjustment_magnitude" {
   description = "Minimum number of tasks to scale down at a time "
-  default     = "10"
+  default     = "0"
 }
 
 variable "scale_up_cooldown" {
@@ -102,5 +107,5 @@ variable "scale_up_upper_bound" {
 
 variable "scale_up_min_adjustment_magnitude" {
   description = "Minimum number of tasks to scale up at a time "
-  default     = "10"
+  default     = "0"
 }
