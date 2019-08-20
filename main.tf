@@ -169,7 +169,7 @@ resource "aws_cloudwatch_metric_alarm" "service_queue_high" {
       period      = "60"
       stat        = "Maximum"
 
-      #      unit        = "Count"
+      #  unit        = "Count"
 
       dimensions {
         QueueName = "${var.queue_name}"
@@ -184,11 +184,11 @@ resource "aws_cloudwatch_metric_alarm" "service_queue_low" {
   alarm_description   = "This alarm monitors ${var.queue_name} Queue count utilization for scaling down"
   comparison_operator = "LessThanThreshold"
   evaluation_periods  = "1"
-  namespace           = "AWS/SQS"
-  period              = "60"
   threshold           = "${var.low_threshold}"
   alarm_actions       = ["${aws_appautoscaling_policy.scale_down.arn}"]
 
+  #  namespace           = "AWS/SQS"
+  #  period              = "60"
   #  statistic           = "Average"
   #  metric_name         = "ApproximateNumberOfMessagesVisible"
 
@@ -207,7 +207,7 @@ resource "aws_cloudwatch_metric_alarm" "service_queue_low" {
       period      = "60"
       stat        = "Maximum"
 
-      #      unit        = "Count"
+      #  unit        = "Count"
 
       dimensions {
         QueueName = "${var.queue_name}"
@@ -223,7 +223,7 @@ resource "aws_cloudwatch_metric_alarm" "service_queue_low" {
       period      = "60"
       stat        = "Maximum"
 
-      #      unit        = "Count"
+      #  unit        = "Count"
 
       dimensions {
         QueueName = "${var.queue_name}"
