@@ -133,10 +133,10 @@ resource "aws_cloudwatch_metric_alarm" "service_queue_high" {
   threshold           = "${var.high_threshold}"
   alarm_actions       = ["${aws_appautoscaling_policy.scale_up.arn}"]
 
-#  namespace           = "AWS/SQS"
-#  period              = "60"
-#  statistic           = "Average"
-#  metric_name         = "ApproximateNumberOfMessagesVisible"
+  #  namespace           = "AWS/SQS"
+  #  period              = "60"
+  #  statistic           = "Average"
+  #  metric_name         = "ApproximateNumberOfMessagesVisible"
 
   metric_query {
     id          = "e1"
@@ -144,7 +144,6 @@ resource "aws_cloudwatch_metric_alarm" "service_queue_high" {
     label       = "Sum_Visible+NonVisible"
     return_data = "true"
   }
-
   metric_query {
     id = "visible"
 
@@ -153,12 +152,14 @@ resource "aws_cloudwatch_metric_alarm" "service_queue_high" {
       namespace   = "AWS/SQS"
       period      = "60"
       stat        = "Maximum"
-#      unit        = "Count"
 
-  dimensions {
-    QueueName = "${var.queue_name}"
+      #      unit        = "Count"
+
+      dimensions {
+        QueueName = "${var.queue_name}"
+      }
+    }
   }
-
   metric_query {
     id = "notvisible"
 
@@ -167,10 +168,13 @@ resource "aws_cloudwatch_metric_alarm" "service_queue_high" {
       namespace   = "AWS/SQS"
       period      = "60"
       stat        = "Maximum"
-#      unit        = "Count"
 
-  dimensions {
-    QueueName = "${var.queue_name}"
+      #      unit        = "Count"
+
+      dimensions {
+        QueueName = "${var.queue_name}"
+      }
+    }
   }
 }
 
@@ -185,8 +189,8 @@ resource "aws_cloudwatch_metric_alarm" "service_queue_low" {
   threshold           = "${var.low_threshold}"
   alarm_actions       = ["${aws_appautoscaling_policy.scale_down.arn}"]
 
-#  statistic           = "Average"
-#  metric_name         = "ApproximateNumberOfMessagesVisible"
+  #  statistic           = "Average"
+  #  metric_name         = "ApproximateNumberOfMessagesVisible"
 
   metric_query {
     id          = "e1"
@@ -194,7 +198,6 @@ resource "aws_cloudwatch_metric_alarm" "service_queue_low" {
     label       = "Sum_Visible+NonVisible"
     return_data = "true"
   }
-
   metric_query {
     id = "visible"
 
@@ -203,12 +206,14 @@ resource "aws_cloudwatch_metric_alarm" "service_queue_low" {
       namespace   = "AWS/SQS"
       period      = "60"
       stat        = "Maximum"
-#      unit        = "Count"
 
-  dimensions {
-    QueueName = "${var.queue_name}"
+      #      unit        = "Count"
+
+      dimensions {
+        QueueName = "${var.queue_name}"
+      }
+    }
   }
-
   metric_query {
     id = "notvisible"
 
@@ -217,9 +222,12 @@ resource "aws_cloudwatch_metric_alarm" "service_queue_low" {
       namespace   = "AWS/SQS"
       period      = "60"
       stat        = "Maximum"
-#      unit        = "Count"
 
-  dimensions {
-    QueueName = "${var.queue_name}"
+      #      unit        = "Count"
+
+      dimensions {
+        QueueName = "${var.queue_name}"
+      }
+    }
   }
 }
