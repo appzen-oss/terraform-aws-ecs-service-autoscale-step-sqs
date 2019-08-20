@@ -130,12 +130,44 @@ resource "aws_cloudwatch_metric_alarm" "service_queue_high" {
   alarm_description   = "This alarm monitors ${var.queue_name} Queue count utilization for scaling up"
   comparison_operator = "GreaterThanOrEqualToThreshold"
   evaluation_periods  = "1"
-  metric_name         = "ApproximateNumberOfMessagesVisible"
-  namespace           = "AWS/SQS"
-  period              = "60"
-  statistic           = "Average"
   threshold           = "${var.high_threshold}"
   alarm_actions       = ["${aws_appautoscaling_policy.scale_up.arn}"]
+
+#  namespace           = "AWS/SQS"
+#  period              = "60"
+#  statistic           = "Average"
+#  metric_name         = "ApproximateNumberOfMessagesVisible"
+
+  metric_query {
+    id          = "e1"
+    expression  = "visible+notvisible"
+    label       = "Sum_Visible+NonVisible"
+    return_data = "true"
+  }
+
+  metric_query {
+    id = "visible"
+
+    metric {
+      metric_name = "ApproximateNumberOfMessagesVisible"
+      namespace   = "AWS/SQS"
+      period      = "60"
+      stat        = "Maximum"
+#      unit        = "Count"
+
+  dimensions {
+    QueueName = "${var.queue_name}"
+  }
+
+  metric_query {
+    id = "notvisible"
+
+    metric {
+      metric_name = "ApproximateNumberOfMessagesNotVisible"
+      namespace   = "AWS/SQS"
+      period      = "60"
+      stat        = "Maximum"
+#      unit        = "Count"
 
   dimensions {
     QueueName = "${var.queue_name}"
@@ -148,12 +180,44 @@ resource "aws_cloudwatch_metric_alarm" "service_queue_low" {
   alarm_description   = "This alarm monitors ${var.queue_name} Queue count utilization for scaling down"
   comparison_operator = "LessThanThreshold"
   evaluation_periods  = "1"
-  metric_name         = "ApproximateNumberOfMessagesVisible"
   namespace           = "AWS/SQS"
   period              = "60"
-  statistic           = "Average"
   threshold           = "${var.low_threshold}"
   alarm_actions       = ["${aws_appautoscaling_policy.scale_down.arn}"]
+
+#  statistic           = "Average"
+#  metric_name         = "ApproximateNumberOfMessagesVisible"
+
+  metric_query {
+    id          = "e1"
+    expression  = "visible+notvisible"
+    label       = "Sum_Visible+NonVisible"
+    return_data = "true"
+  }
+
+  metric_query {
+    id = "visible"
+
+    metric {
+      metric_name = "ApproximateNumberOfMessagesVisible"
+      namespace   = "AWS/SQS"
+      period      = "60"
+      stat        = "Maximum"
+#      unit        = "Count"
+
+  dimensions {
+    QueueName = "${var.queue_name}"
+  }
+
+  metric_query {
+    id = "notvisible"
+
+    metric {
+      metric_name = "ApproximateNumberOfMessagesNotVisible"
+      namespace   = "AWS/SQS"
+      period      = "60"
+      stat        = "Maximum"
+#      unit        = "Count"
 
   dimensions {
     QueueName = "${var.queue_name}"
