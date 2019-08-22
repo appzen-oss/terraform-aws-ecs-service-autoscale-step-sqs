@@ -1,6 +1,6 @@
 variable "adjustment_type_down" {
   description = "Autoscaling policy down adjustment type (ChangeInCapacity, PercentChangeInCapacity)"
-  default     = "ChangeInCapacity"
+  default     = "ExactCapacity"
 }
 
 variable "adjustment_type_up" {

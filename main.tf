@@ -128,7 +128,7 @@ resource "aws_appautoscaling_policy" "scale_down" {
 resource "aws_cloudwatch_metric_alarm" "service_queue_high" {
   alarm_name          = "${module.label.id}-queue-count-high"
   alarm_description   = "This alarm monitors ${var.queue_name} Queue count utilization for scaling up"
-  comparison_operator = "GreaterThanOrEqualToThreshold"
+  comparison_operator = "GreaterThanThreshold"
   evaluation_periods  = "1"
   threshold           = "${var.high_threshold}"
   alarm_actions       = ["${aws_appautoscaling_policy.scale_up.arn}"]
@@ -182,15 +182,10 @@ resource "aws_cloudwatch_metric_alarm" "service_queue_high" {
 resource "aws_cloudwatch_metric_alarm" "service_queue_low" {
   alarm_name          = "${module.label.id}-queue-count-low"
   alarm_description   = "This alarm monitors ${var.queue_name} Queue count utilization for scaling down"
-  comparison_operator = "LessThanThreshold"
+  comparison_operator = "LessThanOrEqualToThreshold"
   evaluation_periods  = "1"
   threshold           = "${var.low_threshold}"
   alarm_actions       = ["${aws_appautoscaling_policy.scale_down.arn}"]
-
-  #  namespace           = "AWS/SQS"
-  #  period              = "60"
-  #  statistic           = "Average"
-  #  metric_name         = "ApproximateNumberOfMessagesVisible"
 
   metric_query {
     id          = "e1"
