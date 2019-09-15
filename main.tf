@@ -80,7 +80,7 @@ resource "aws_appautoscaling_target" "target" {
 ##
 resource "aws_appautoscaling_policy" "scale_up" {
   depends_on         = ["aws_appautoscaling_target.target"]
-  name               = "${module.label.id}-scale-up-queue"
+  name               = "${module.label.id}-sqs-up"
   policy_type        = "StepScaling"
   resource_id        = "service/${var.cluster_name}/${var.service_name}"
   scalable_dimension = "ecs:service:DesiredCount"
@@ -100,8 +100,12 @@ resource "aws_appautoscaling_policy" "scale_up" {
   }
 }
 resource "aws_appautoscaling_policy" "scale_big_up" {
+  count = "${
+    var.high_big_threshold > 0
+    ? 1 : 0}"
+
   depends_on         = ["aws_appautoscaling_target.target"]
-  name               = "${module.label.id}-scale-big-up-queue"
+  name               = "${module.label.id}-sqs-big-up"
   policy_type        = "StepScaling"
   resource_id        = "service/${var.cluster_name}/${var.service_name}"
   scalable_dimension = "ecs:service:DesiredCount"
@@ -123,7 +127,7 @@ resource "aws_appautoscaling_policy" "scale_big_up" {
 
 resource "aws_appautoscaling_policy" "scale_down" {
   depends_on         = ["aws_appautoscaling_target.target"]
-  name               = "${module.label.id}-scale-down-queue"
+  name               = "${module.label.id}-sqs-down"
   policy_type        = "StepScaling"
   resource_id        = "service/${var.cluster_name}/${var.service_name}"
   scalable_dimension = "ecs:service:DesiredCount"
