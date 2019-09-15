@@ -99,6 +99,27 @@ resource "aws_appautoscaling_policy" "scale_up" {
     }
   }
 }
+resource "aws_appautoscaling_policy" "scale_big_up" {
+  depends_on         = ["aws_appautoscaling_target.target"]
+  name               = "${module.label.id}-scale-big-up-queue"
+  policy_type        = "StepScaling"
+  resource_id        = "service/${var.cluster_name}/${var.service_name}"
+  scalable_dimension = "ecs:service:DesiredCount"
+  service_namespace  = "ecs"
+
+  step_scaling_policy_configuration = {
+    cooldown                 = "${var.scale_big_up_cooldown}"
+    adjustment_type          = "${var.adjustment_type_up}"
+    metric_aggregation_type  = "Average"
+    min_adjustment_magnitude = "${var.scale_up_min_adjustment_magnitude}"
+
+    step_adjustment {
+      metric_interval_lower_bound = "${var.scale_up_lower_bound}"
+      metric_interval_upper_bound = "${var.scale_up_upper_bound}"
+      scaling_adjustment          = "${var.scale_big_up_count}"
+    }
+  }
+}
 
 resource "aws_appautoscaling_policy" "scale_down" {
   depends_on         = ["aws_appautoscaling_target.target"]
@@ -126,7 +147,7 @@ resource "aws_appautoscaling_policy" "scale_down" {
 ## Cloudwatch Alarms
 ##
 resource "aws_cloudwatch_metric_alarm" "service_queue_high" {
-  alarm_name          = "${module.label.id}-queue-count-high"
+  alarm_name          = "${module.label.id}-sqs-up"
   alarm_description   = "This alarm monitors ${var.queue_name} Queue count utilization for scaling up"
   comparison_operator = "GreaterThanThreshold"
   evaluation_periods  = "1"
@@ -178,9 +199,66 @@ resource "aws_cloudwatch_metric_alarm" "service_queue_high" {
   }
 }
 
+resource "aws_cloudwatch_metric_alarm" "service_queue_big_high" {
+  count = "${
+    var.high_big_threshold > 0
+    ? 1 : 0}"
+
+  alarm_name          = "${module.label.id}-sqs-big-up"
+  alarm_description   = "This alarm monitors ${var.queue_name} Queue count utilization for big scaling up"
+  comparison_operator = "GreaterThanThreshold"
+  evaluation_periods  = "1"
+  threshold           = "${var.high_big_threshold}"
+  alarm_actions       = ["${aws_appautoscaling_policy.scale_big_up.arn}"]
+
+  #  namespace           = "AWS/SQS"
+  #  period              = "60"
+  #  statistic           = "Average"
+  #  metric_name         = "ApproximateNumberOfMessagesVisible"
+
+  metric_query {
+    id          = "e1"
+    expression  = "visible+notvisible"
+    label       = "Sum_Visible+NonVisible"
+    return_data = "true"
+  }
+  metric_query {
+    id = "visible"
+
+    metric {
+      metric_name = "ApproximateNumberOfMessagesVisible"
+      namespace   = "AWS/SQS"
+      period      = "60"
+      stat        = "Maximum"
+
+      #      unit        = "Count"
+
+      dimensions {
+        QueueName = "${var.queue_name}"
+      }
+    }
+  }
+  metric_query {
+    id = "notvisible"
+
+    metric {
+      metric_name = "ApproximateNumberOfMessagesNotVisible"
+      namespace   = "AWS/SQS"
+      period      = "60"
+      stat        = "Maximum"
+
+      #  unit        = "Count"
+
+      dimensions {
+        QueueName = "${var.queue_name}"
+      }
+    }
+  }
+}
+
 # A CloudWatch alarm that monitors CPU utilization of containers for scaling down
 resource "aws_cloudwatch_metric_alarm" "service_queue_low" {
-  alarm_name          = "${module.label.id}-queue-count-low"
+  alarm_name          = "${module.label.id}-sqs-down"
   alarm_description   = "This alarm monitors ${var.queue_name} Queue count utilization for scaling down"
   comparison_operator = "LessThanOrEqualToThreshold"
   evaluation_periods  = "1"

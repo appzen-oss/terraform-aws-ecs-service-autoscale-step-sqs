@@ -35,6 +35,21 @@ variable "high_threshold" {
   default     = "1000"
 }
 
+variable "high_big_threshold" {
+  description = "The value against which the high statistic is compared"
+  default     = "0"
+}
+
+variable "scale_big_up_count" {
+  description = "The value against which the high statistic is compared"
+  default     = "0"
+}
+
+variable "scale_big_up_cooldown" {
+  description = "The value against which the high statistic is compared"
+  default     = "600"
+}
+
 variable "low_eval_periods" {
   description = "The number of periods over which data is compared to the low threshold"
   default     = "1"
