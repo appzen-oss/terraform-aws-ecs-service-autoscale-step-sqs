@@ -42,7 +42,7 @@ variable "high_big_threshold" {
 
 variable "scale_big_up_count" {
   description = "The value against which the high statistic is compared"
-  default     = "0"
+  default     = "20"
 }
 
 variable "scale_big_up_cooldown" {
