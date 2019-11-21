@@ -156,7 +156,7 @@ resource "aws_cloudwatch_metric_alarm" "service_max_stuck" {
   comparison_operator       = "GreaterThanOrEqualToThreshold"
   evaluation_periods        = "${var.stuck_eval_minutes}"
   metric_name               = "CPUUtilization"
-  namespace                 = "AWS/SQS"
+  namespace                 = "AWS/ECS"
   period                    = "60"
   statistic                 = "SampleCount"
   threshold                 = "${var.max_capacity}"

@@ -131,9 +131,6 @@ variable "scale_up_min_adjustment_magnitude" {
 }
 
 variable "sns_stuck_alarm_arn" {
-  description = "SNS  autoscaling stuck at max alarm arn"
+  description = "SNS autoscaling stuck at max alarm arn"
   default     = ""
-  # prod: arn:aws:sns:us-east-1:783198268885:OpsGenie
-  # dev: arn:aws:sns:us-east-1:186266557194:warn-slack
-  # dev: arn:aws:sns:us-east-1:186266557194:OpsGenie
 }
