@@ -52,7 +52,7 @@ variable "scale_big_up_cooldown" {
 
 variable "stuck_eval_minutes" {
   description = "The number of periods/minute before triggering alert"
-  default     = "240"
+  default     = "300"
 }
 
 variable "low_eval_periods" {
