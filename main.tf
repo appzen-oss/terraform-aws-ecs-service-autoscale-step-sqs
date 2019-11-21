@@ -150,6 +150,22 @@ resource "aws_appautoscaling_policy" "scale_down" {
 ##
 ## Cloudwatch Alarms
 ##
+resource "aws_cloudwatch_metric_alarm" "service_max_stuck" {
+  alarm_name                = "${module.label.id}-max-stuck"
+  alarm_description         = "${module.label.id} is possibly stuck at max"
+  comparison_operator       = "GreaterThanOrEqualToThreshold"
+  evaluation_periods        = "${var.stuck_eval_minutes}"
+  metric_name               = "CPUUtilization"
+  namespace                 = "AWS/SQS"
+  period                    = "60"
+  statistic                 = "SampleCount"
+  threshold                 = "${var.max_capacity}"
+  actions_enabled           = "true"
+  alarm_actions             = ["${var.sns_stuck_alarm_arn}"]
+  ok_actions                = ["${var.sns_stuck_alarm_arn}"]
+  insufficient_data_actions = []
+}
+
 resource "aws_cloudwatch_metric_alarm" "service_queue_high" {
   alarm_name          = "${module.label.id}-sqs-up"
   alarm_description   = "This alarm monitors ${var.queue_name} Queue count utilization for scaling up"

@@ -50,6 +50,11 @@ variable "scale_big_up_cooldown" {
   default     = "600"
 }
 
+variable "stuck_eval_minutes" {
+  description = "The number of periods/minute before triggering alert"
+  default     = "240"
+}
+
 variable "low_eval_periods" {
   description = "The number of periods over which data is compared to the low threshold"
   default     = "1"
@@ -123,4 +128,12 @@ variable "scale_up_upper_bound" {
 variable "scale_up_min_adjustment_magnitude" {
   description = "Minimum number of tasks to scale up at a time "
   default     = "0"
+}
+
+variable "sns_stuck_alarm_arn" {
+  description = "SNS  autoscaling stuck at max alarm arn"
+  default     = ""
+  # prod: arn:aws:sns:us-east-1:783198268885:OpsGenie
+  # dev: arn:aws:sns:us-east-1:186266557194:warn-slack
+  # dev: arn:aws:sns:us-east-1:186266557194:OpsGenie
 }
