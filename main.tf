@@ -159,7 +159,7 @@ resource "aws_cloudwatch_metric_alarm" "service_max_stuck" {
   namespace                 = "AWS/ECS"
   period                    = "60"
   statistic                 = "SampleCount"
-  threshold                 = floor(${var.max_capacity} * 0.9)
+  threshold                 = "floor(${var.max_capacity} * 0.9)"
   actions_enabled           = "true"
   alarm_actions             = ["${var.sns_stuck_alarm_arn}"]
   ok_actions                = ["${var.sns_stuck_alarm_arn}"]
