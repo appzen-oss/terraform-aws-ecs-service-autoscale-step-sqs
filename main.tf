@@ -154,7 +154,7 @@ resource "aws_cloudwatch_metric_alarm" "service_max_stuck" {
   alarm_name                = "${module.label.id}-max-stuck"
   alarm_description         = "${module.label.id} is possibly stuck at max"
   comparison_operator       = "GreaterThanOrEqualToThreshold"
-  evaluation_periods        = "${var.stuck_eval_minutes}"
+  evaluation_periods        = "floor(${var.stuck_eval_minutes} * 0.9)"
   metric_name               = "CPUUtilization"
   namespace                 = "AWS/ECS"
   period                    = "60"
