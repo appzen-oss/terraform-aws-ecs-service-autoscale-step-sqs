@@ -164,7 +164,7 @@ resource "aws_cloudwatch_metric_alarm" "service_max_stuck" {
   alarm_actions             = ["${var.sns_stuck_alarm_arn}"]
   ok_actions                = ["${var.sns_stuck_alarm_arn}"]
   insufficient_data_actions = []
-  treat_missing_data        = "foo"
+  treat_missing_data        = "ignore"
   dimensions                = { 
     ClusterName             = "${var.cluster_name}"
     ServiceName             = "${var.service_name}"
