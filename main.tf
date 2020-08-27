@@ -413,11 +413,12 @@ resource "aws_cloudwatch_metric_alarm" "queue_time" {
 
     metric {
       metric_name = "RunningTaskCount"
-      namespace   = "AWS/SQS"
+      namespace   = "ECS/ContainerInsights"
       period      = "60"
       stat        = "Maximum"
 
       dimensions {
+        ClusterName = "${var.cluster_name}"
         ServiceName = "${var.service_name}"
       }
     }
