@@ -368,7 +368,7 @@ resource "aws_cloudwatch_metric_alarm" "queue_time" {
   # Requires ECS ContainerInsights to be enabled: aws ecs update-cluster-settings --cluster <cluster name> --settings name=containerInsights,value=enabled
   # ECS cluster name and service name
 
-  alarm_name          = "${module.label.id}-sqs-big-up"
+  alarm_name          = "${module.label.id}-sqs-queuetime-up"
   alarm_description   = "Alarm monitors ${var.queue_name} QueueTime = ((Queue Size * Worker Timing) / (number of current tasks * Number Of workers per task))"
   comparison_operator = "GreaterThanThreshold"
   evaluation_periods  = "1"
@@ -376,7 +376,7 @@ resource "aws_cloudwatch_metric_alarm" "queue_time" {
   alarm_actions       = ["${aws_appautoscaling_policy.scale_queuetime_up.arn}"]
   metric_query {
     id          = "queuetime"
-    expression  = "((visible+notvisible) * ${var.queue_worker_timing}) / (taskcount * ${var.queue_task_worker_count}))"
+    expression  = "((visible+notvisible) * ${var.queue_worker_timing}) / (taskcount * ${var.queue_task_worker_count})"
     label       = "WaitTime"
     return_data = "true"
   }

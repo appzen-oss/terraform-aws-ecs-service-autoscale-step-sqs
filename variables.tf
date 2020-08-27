@@ -92,7 +92,7 @@ variable "queue_worker_timing" {
 
 variable "queue_task_worker_count" {
   description = "number of Workers per Task in calculation queue_time_threshold"
-  default     = "1"
+  default     = "4"
 }
 
 variable "scale_down_cooldown" {
