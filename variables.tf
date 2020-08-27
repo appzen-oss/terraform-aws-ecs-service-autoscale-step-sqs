@@ -12,10 +12,6 @@ variable "cluster_name" {
   description = "Name of ECS cluster that service is in"
 }
 
-variable "queue_name" {
-  description = "Name of SQS queue to monitor"
-}
-
 variable "service_name" {
   description = "Name of ECS service to autoscale"
 }
@@ -78,6 +74,25 @@ variable "max_capacity" {
 variable "min_capacity" {
   description = "Minimum number of tasks to scale to"
   default     = "0"
+}
+
+variable "queue_name" {
+  description = "Name of SQS queue to monitor"
+}
+
+variable "queue_time_threshold" {
+  description = "Calculation of time it takes for queue job to get start processing ((Queue Size * Worker Timing) / (number of Current Tasks * number of Workers per Task))"
+  default     = ""
+}
+
+variable "queue_worker_timing" {
+  description = "Calculation of time it takes for queue job to get start processing ((Queue Size * Worker Timing) / (number of current tasks * Number Of workers per task))"
+  default     = "1"
+}
+
+variable "queue_task_worker_count" {
+  description = "Calculation of time it takes for queue job to get start processing ((Queue Size * Worker Timing) / (number of current tasks * Number Of workers per task))"
+  default     = "1"
 }
 
 variable "scale_down_cooldown" {
