@@ -373,7 +373,7 @@ resource "aws_cloudwatch_metric_alarm" "queue_time" {
   comparison_operator = "GreaterThanThreshold"
   evaluation_periods  = "1"
   threshold           = "${var.queue_time_threshold}"
-  alarm_actions       = ["${aws_appautoscaling_policy.queue_time_up.arn}"]
+  alarm_actions       = ["${aws_appautoscaling_policy.scale_queuetime_up.arn}"]
   metric_query {
     id          = "queuetime"
     expression  = "((visible+notvisible) * ${var.queue_worker_timing}) / (taskcount * ${var.queue_task_worker_count}))"

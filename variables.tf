@@ -81,17 +81,17 @@ variable "queue_name" {
 }
 
 variable "queue_time_threshold" {
-  description = "Calculation of time it takes for queue job to get start processing ((Queue Size * Worker Timing) / (number of Current Tasks * number of Workers per Task))"
-  default     = ""
+  description = "Threshold for queue_time = ((Queue Size * Worker Timing) / (number of Current Tasks * number of Workers per Task))"
+  default     = "0"
 }
 
 variable "queue_worker_timing" {
-  description = "Calculation of time it takes for queue job to get start processing ((Queue Size * Worker Timing) / (number of current tasks * Number Of workers per task))"
+  description = "Worker timing in calculation queue_time_threshold"
   default     = "1"
 }
 
 variable "queue_task_worker_count" {
-  description = "Calculation of time it takes for queue job to get start processing ((Queue Size * Worker Timing) / (number of current tasks * Number Of workers per task))"
+  description = "number of Workers per Task in calculation queue_time_threshold"
   default     = "1"
 }
 
