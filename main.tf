@@ -79,6 +79,10 @@ resource "aws_appautoscaling_target" "target" {
 ## Autoscaling Policies
 ##
 resource "aws_appautoscaling_policy" "scale_up" {
+  count = "${
+    var.high_big_threshold > 0
+    ? 1 : 0}"
+
   depends_on         = ["aws_appautoscaling_target.target"]
   name               = "${module.label.id}-sqs-up"
   policy_type        = "StepScaling"
@@ -153,6 +157,10 @@ resource "aws_appautoscaling_policy" "scale_queuetime_up" {
 }
 
 resource "aws_appautoscaling_policy" "scale_down" {
+  count = "${
+    var.scale_down_count > 0
+    ? 1 : 0}"
+
   depends_on         = ["aws_appautoscaling_target.target"]
   name               = "${module.label.id}-sqs-down"
   policy_type        = "StepScaling"
@@ -178,6 +186,10 @@ resource "aws_appautoscaling_policy" "scale_down" {
 ## Cloudwatch Alarms
 ##
 resource "aws_cloudwatch_metric_alarm" "service_max_stuck" {
+  count = "${
+    var.stuck_eval_minutes > 0
+    ? 1 : 0}"
+
   alarm_name                = "${module.label.id}-max-stuck"
   alarm_description         = "${module.label.id} is possibly stuck at max"
   comparison_operator       = "GreaterThanOrEqualToThreshold"
@@ -200,6 +212,10 @@ resource "aws_cloudwatch_metric_alarm" "service_max_stuck" {
 }
 
 resource "aws_cloudwatch_metric_alarm" "service_queue_high" {
+  count = "${
+    var.high_threshold > 0
+    ? 1 : 0}"
+
   alarm_name          = "${module.label.id}-sqs-up"
   alarm_description   = "This alarm monitors ${var.queue_name} Queue count utilization for scaling up"
   comparison_operator = "GreaterThanThreshold"
@@ -311,6 +327,10 @@ resource "aws_cloudwatch_metric_alarm" "service_queue_big_high" {
 
 # A CloudWatch alarm that monitors CPU utilization of containers for scaling down
 resource "aws_cloudwatch_metric_alarm" "service_queue_low" {
+  count = "${
+    var.low_threshold >= 0
+    ? 1 : 0}"
+
   alarm_name          = "${module.label.id}-sqs-down"
   alarm_description   = "This alarm monitors ${var.queue_name} Queue count utilization for scaling down"
   comparison_operator = "LessThanOrEqualToThreshold"
