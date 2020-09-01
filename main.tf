@@ -80,7 +80,7 @@ resource "aws_appautoscaling_target" "target" {
 ##
 resource "aws_appautoscaling_policy" "scale_up" {
   count = "${
-    var.high_big_threshold > 0
+    var.high_threshold > 0
     ? 1 : 0}"
 
   depends_on         = ["aws_appautoscaling_target.target"]
@@ -158,7 +158,7 @@ resource "aws_appautoscaling_policy" "scale_queuetime_up" {
 
 resource "aws_appautoscaling_policy" "scale_down" {
   count = "${
-    var.scale_down_count > 0
+    var.low_threshold >= 0
     ? 1 : 0}"
 
   depends_on         = ["aws_appautoscaling_target.target"]
