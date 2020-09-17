@@ -136,7 +136,7 @@ resource "aws_appautoscaling_policy" "scale_queuetime_up" {
     ? 1 : 0}"
 
   depends_on         = ["aws_appautoscaling_target.target"]
-  name               = "${module.label.id}-queue_time-up"
+  name               = "${module.label.id}-queuetime-up"
   policy_type        = "StepScaling"
   resource_id        = "service/${var.cluster_name}/${var.service_name}"
   scalable_dimension = "ecs:service:DesiredCount"
@@ -162,7 +162,7 @@ resource "aws_appautoscaling_policy" "scale_down" {
     ? 1 : 0}"
 
   depends_on         = ["aws_appautoscaling_target.target"]
-  name               = "${module.label.id}-sqs-down"
+  name               = "${module.label.id}-queuetime-down"
   policy_type        = "StepScaling"
   resource_id        = "service/${var.cluster_name}/${var.service_name}"
   scalable_dimension = "ecs:service:DesiredCount"
@@ -455,12 +455,12 @@ resource "aws_cloudwatch_metric_alarm" "queue_down" {
   # Requires ECS ContainerInsights to be enabled: aws ecs update-cluster-settings --cluster <cluster name> --settings name=containerInsights,value=enabled
   # ECS cluster name and service name
 
-  alarm_name          = "${module.label.id}-sqs-queuetime-up"
+  alarm_name          = "${module.label.id}-sqs-queuetime-down"
   alarm_description   = "Alarm monitors ${var.queue_name} QueueTime = ((Queue Size * Worker Timing) / (number of current tasks * Number Of workers per task))"
   comparison_operator = "GreaterThanThreshold"
   evaluation_periods  = "1"
   threshold           = "${var.queue_down_threshold}"
-  alarm_actions       = ["${aws_appautoscaling_policy.scale_queuetime_up.arn}"]
+  alarm_actions       = ["${aws_appautoscaling_policy.scale_queuetime_down.arn}"]
   metric_query {
     id          = "queuetime"
     expression  = "((visible) * ${var.queue_worker_timing}) / (IF(taskcount==0, 1, taskcount) * ${var.queue_task_worker_count})"
