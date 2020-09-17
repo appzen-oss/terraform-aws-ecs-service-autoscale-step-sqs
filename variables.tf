@@ -80,7 +80,12 @@ variable "queue_name" {
   description = "Name of SQS queue to monitor"
 }
 
-variable "queue_time_threshold" {
+variable "queue_up_threshold" {
+  description = "Threshold for queue_time = ((Queue Size * Worker Timing) / (number of Current Tasks * number of Workers per Task))"
+  default     = "0"
+}
+
+variable "queue_down_threshold" {
   description = "Threshold for queue_time = ((Queue Size * Worker Timing) / (number of Current Tasks * number of Workers per Task))"
   default     = "0"
 }

@@ -380,9 +380,9 @@ resource "aws_cloudwatch_metric_alarm" "service_queue_low" {
   }
 }
 
-resource "aws_cloudwatch_metric_alarm" "queue_time" {
+resource "aws_cloudwatch_metric_alarm" "queue_up" {
   count = "${
-    var.queue_time_threshold > 0
+    var.queue_up_threshold > 0
     ? 1 : 0}"
 
   # Requires ECS ContainerInsights to be enabled: aws ecs update-cluster-settings --cluster <cluster name> --settings name=containerInsights,value=enabled
@@ -396,7 +396,7 @@ resource "aws_cloudwatch_metric_alarm" "queue_time" {
   alarm_actions       = ["${aws_appautoscaling_policy.scale_queuetime_up.arn}"]
   metric_query {
     id          = "queuetime"
-    expression  = "((visible+notvisible) * ${var.queue_worker_timing}) / (taskcount * ${var.queue_task_worker_count})"
+    expression  = "((visible) * ${var.queue_worker_timing}) / (IF(taskcount == 0 ? 1 : taskcount) * ${var.queue_task_worker_count})"
     label       = "WaitTime"
     return_data = "true"
   }
@@ -414,6 +414,7 @@ resource "aws_cloudwatch_metric_alarm" "queue_time" {
       }
     }
   }
+/*
   metric_query {
     id = "notvisible"
 
@@ -428,6 +429,74 @@ resource "aws_cloudwatch_metric_alarm" "queue_time" {
       }
     }
   }
+*/
+  metric_query {
+    id = "taskcount"
+
+    metric {
+      metric_name = "RunningTaskCount"
+      namespace   = "ECS/ContainerInsights"
+      period      = "60"
+      stat        = "Maximum"
+
+      dimensions {
+        ClusterName = "${var.cluster_name}"
+        ServiceName = "${var.service_name}"
+      }
+    }
+  }
+}
+
+resource "aws_cloudwatch_metric_alarm" "queue_down" {
+  count = "${
+    var.queue_down_threshold > 0
+    ? 1 : 0}"
+
+  # Requires ECS ContainerInsights to be enabled: aws ecs update-cluster-settings --cluster <cluster name> --settings name=containerInsights,value=enabled
+  # ECS cluster name and service name
+
+  alarm_name          = "${module.label.id}-sqs-queuetime-up"
+  alarm_description   = "Alarm monitors ${var.queue_name} QueueTime = ((Queue Size * Worker Timing) / (number of current tasks * Number Of workers per task))"
+  comparison_operator = "GreaterThanThreshold"
+  evaluation_periods  = "1"
+  threshold           = "${var.queue_time_threshold}"
+  alarm_actions       = ["${aws_appautoscaling_policy.scale_queuetime_up.arn}"]
+  metric_query {
+    id          = "queuetime"
+    expression  = "((visible) * ${var.queue_worker_timing}) / (IF(taskcount == 0 ? 1 : taskcount) * ${var.queue_task_worker_count})"
+    label       = "WaitTime"
+    return_data = "true"
+  }
+  metric_query {
+    id = "visible"
+
+    metric {
+      metric_name = "ApproximateNumberOfMessagesVisible"
+      namespace   = "AWS/SQS"
+      period      = "60"
+      stat        = "Maximum"
+
+      dimensions {
+        QueueName = "${var.queue_name}"
+      }
+    }
+  }
+/*
+  metric_query {
+    id = "notvisible"
+
+    metric {
+      metric_name = "ApproximateNumberOfMessagesNotVisible"
+      namespace   = "AWS/SQS"
+      period      = "60"
+      stat        = "Maximum"
+
+      dimensions {
+        QueueName = "${var.queue_name}"
+      }
+    }
+  }
+*/
   metric_query {
     id = "taskcount"
 
