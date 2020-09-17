@@ -156,13 +156,39 @@ resource "aws_appautoscaling_policy" "scale_queuetime_up" {
   }
 }
 
+resource "aws_appautoscaling_policy" "scale_queuetime_down" {
+  count = "${
+    var.queue_down_threshold >= 0
+    ? 1 : 0}"
+
+  depends_on         = ["aws_appautoscaling_target.target"]
+  name               = "${module.label.id}-queuetime-down"
+  policy_type        = "StepScaling"
+  resource_id        = "service/${var.cluster_name}/${var.service_name}"
+  scalable_dimension = "ecs:service:DesiredCount"
+  service_namespace  = "ecs"
+
+  step_scaling_policy_configuration = {
+    cooldown                 = "${var.scale_down_cooldown}"
+    adjustment_type          = "${var.adjustment_type_down}"
+    metric_aggregation_type  = "Average"
+    min_adjustment_magnitude = "${var.scale_down_min_adjustment_magnitude}"
+
+    step_adjustment {
+      metric_interval_lower_bound = "${var.scale_down_lower_bound}"
+      metric_interval_upper_bound = "${var.scale_down_upper_bound}"
+      scaling_adjustment          = "${var.scale_down_count}"
+    }
+  }
+}
+
 resource "aws_appautoscaling_policy" "scale_down" {
   count = "${
     var.low_threshold >= 0
     ? 1 : 0}"
 
   depends_on         = ["aws_appautoscaling_target.target"]
-  name               = "${module.label.id}-queuetime-down"
+  name               = "${module.label.id}-queue-down"
   policy_type        = "StepScaling"
   resource_id        = "service/${var.cluster_name}/${var.service_name}"
   scalable_dimension = "ecs:service:DesiredCount"
