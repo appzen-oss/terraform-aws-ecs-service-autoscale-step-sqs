@@ -416,13 +416,13 @@ resource "aws_cloudwatch_metric_alarm" "queue_up" {
 
   alarm_name          = "${module.label.id}-sqs-queuetime-up"
   alarm_description   = "Alarm monitors ${var.queue_name} QueueTime = ((Queue Size * Worker Timing) / (number of current tasks * Number Of workers per task))"
-  comparison_operator = "GreaterThanThreshold"
+  comparison_operator = "GreaterThanOrEqualToThreshold"
   evaluation_periods  = "1"
   threshold           = "${var.queue_up_threshold}"
   alarm_actions       = ["${aws_appautoscaling_policy.scale_queuetime_up.arn}"]
   metric_query {
     id          = "queuetime"
-    expression  = "((visible) * ${var.queue_worker_timing}) / (IF(taskcount==0, 1, taskcount) * ${var.queue_task_worker_count})"
+    expression  = "ceil(((visible) * ${var.queue_worker_timing}) / (IF(taskcount==0, 1, taskcount) * ${var.queue_task_worker_count}))"
     label       = "WaitTime"
     return_data = "true"
   }
@@ -475,7 +475,7 @@ resource "aws_cloudwatch_metric_alarm" "queue_up" {
 
 resource "aws_cloudwatch_metric_alarm" "queue_down" {
   count = "${
-    var.queue_down_threshold > 0
+    var.queue_down_threshold >= 0
     ? 1 : 0}"
 
   # Requires ECS ContainerInsights to be enabled: aws ecs update-cluster-settings --cluster <cluster name> --settings name=containerInsights,value=enabled
@@ -483,13 +483,13 @@ resource "aws_cloudwatch_metric_alarm" "queue_down" {
 
   alarm_name          = "${module.label.id}-sqs-queuetime-down"
   alarm_description   = "Alarm monitors ${var.queue_name} QueueTime = ((Queue Size * Worker Timing) / (number of current tasks * Number Of workers per task))"
-  comparison_operator = "GreaterThanThreshold"
+  comparison_operator = "LessThanOrEqualToThreshold"
   evaluation_periods  = "1"
   threshold           = "${var.queue_down_threshold}"
   alarm_actions       = ["${aws_appautoscaling_policy.scale_queuetime_down.arn}"]
   metric_query {
     id          = "queuetime"
-    expression  = "((visible) * ${var.queue_worker_timing}) / (IF(taskcount==0, 1, taskcount) * ${var.queue_task_worker_count})"
+    expression  = "ceil(((visible) * ${var.queue_worker_timing}) / (IF(taskcount==0, 1, taskcount) * ${var.queue_task_worker_count}))"
     label       = "WaitTime"
     return_data = "true"
   }
