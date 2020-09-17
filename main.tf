@@ -422,7 +422,7 @@ resource "aws_cloudwatch_metric_alarm" "queue_up" {
   alarm_actions       = ["${aws_appautoscaling_policy.scale_queuetime_up.arn}"]
   metric_query {
     id          = "queuetime"
-    expression  = "CEIL(((visible) * ${var.queue_worker_timing}) / (IF(taskcount==0, 1, taskcount) * ${var.queue_task_worker_count}))"
+    expression  = "((visible + (taskcount * ${var.queue_task_worker_count})) * ${var.queue_worker_timing}) / (IF(taskcount==0, 1, taskcount) * ${var.queue_task_worker_count})"
     label       = "WaitTime"
     return_data = "true"
   }
@@ -489,7 +489,7 @@ resource "aws_cloudwatch_metric_alarm" "queue_down" {
   alarm_actions       = ["${aws_appautoscaling_policy.scale_queuetime_down.arn}"]
   metric_query {
     id          = "queuetime"
-    expression  = "CEIL(((visible) * ${var.queue_worker_timing}) / (IF(taskcount==0, 1, taskcount) * ${var.queue_task_worker_count}))"
+    expression  = "((visible + (taskcount * ${var.queue_task_worker_count})) * ${var.queue_worker_timing}) / (IF(taskcount==0, 1, taskcount) * ${var.queue_task_worker_count})"
     label       = "WaitTime"
     return_data = "true"
   }
