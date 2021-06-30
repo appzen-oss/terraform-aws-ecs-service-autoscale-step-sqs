@@ -235,6 +235,7 @@ resource "aws_cloudwatch_metric_alarm" "service_max_stuck" {
     ClusterName = "${var.cluster_name}"
     ServiceName = "${var.service_name}"
   }
+  tags = "${module.label.tags}"
 }
 
 resource "aws_cloudwatch_metric_alarm" "service_queue_high" {
@@ -292,6 +293,7 @@ resource "aws_cloudwatch_metric_alarm" "service_queue_high" {
       }
     }
   }
+  tags = "${module.label.tags}"
 }
 
 resource "aws_cloudwatch_metric_alarm" "service_queue_big_high" {
@@ -349,6 +351,7 @@ resource "aws_cloudwatch_metric_alarm" "service_queue_big_high" {
       }
     }
   }
+  tags = "${module.label.tags}"
 }
 
 # A CloudWatch alarm that monitors CPU utilization of containers for scaling down
@@ -404,6 +407,7 @@ resource "aws_cloudwatch_metric_alarm" "service_queue_low" {
       }
     }
   }
+  tags = "${module.label.tags}"
 }
 
 resource "aws_cloudwatch_metric_alarm" "queue_up" {
@@ -471,6 +475,7 @@ resource "aws_cloudwatch_metric_alarm" "queue_up" {
       }
     }
   }
+  tags = "${module.label.tags}"
 }
 
 resource "aws_cloudwatch_metric_alarm" "queue_down" {
@@ -538,4 +543,5 @@ resource "aws_cloudwatch_metric_alarm" "queue_down" {
       }
     }
   }
+  tags = "${module.label.tags}"
 }
