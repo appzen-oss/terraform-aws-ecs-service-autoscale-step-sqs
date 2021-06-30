@@ -246,7 +246,7 @@ resource "aws_cloudwatch_metric_alarm" "service_queue_high" {
   alarm_name          = "${module.label.id}-sqs-up"
   alarm_description   = "This alarm monitors ${var.queue_name} Queue count utilization for scaling up"
   comparison_operator = "GreaterThanThreshold"
-  evaluation_periods  = "${var.high_eval_period}"
+  evaluation_periods  = "${var.high_eval_periods}"
   threshold           = "${var.high_threshold}"
   alarm_actions       = ["${aws_appautoscaling_policy.scale_up.arn}"]
 
@@ -304,7 +304,7 @@ resource "aws_cloudwatch_metric_alarm" "service_queue_big_high" {
   alarm_name          = "${module.label.id}-sqs-big-up"
   alarm_description   = "This alarm monitors ${var.queue_name} Queue count utilization for big scaling up"
   comparison_operator = "GreaterThanThreshold"
-  evaluation_periods  = "${var.high_eval_period}"
+  evaluation_periods  = "${var.high_eval_periods}"
   threshold           = "${var.high_big_threshold}"
   alarm_actions       = ["${aws_appautoscaling_policy.scale_big_up.arn}"]
 
@@ -363,7 +363,7 @@ resource "aws_cloudwatch_metric_alarm" "service_queue_low" {
   alarm_name          = "${module.label.id}-sqs-down"
   alarm_description   = "This alarm monitors ${var.queue_name} Queue count utilization for scaling down"
   comparison_operator = "LessThanOrEqualToThreshold"
-  evaluation_periods  = "${var.low_eval_period}"
+  evaluation_periods  = "${var.low_eval_periods}"
   threshold           = "${var.low_threshold}"
   alarm_actions       = ["${aws_appautoscaling_policy.scale_down.arn}"]
 
@@ -421,7 +421,7 @@ resource "aws_cloudwatch_metric_alarm" "queue_up" {
   alarm_name          = "${module.label.id}-sqs-queuetime-up"
   alarm_description   = "Alarm monitors ${var.queue_name} QueueTime = ((Queue Size * Worker Timing) / (number of current tasks * Number Of workers per task))"
   comparison_operator = "GreaterThanOrEqualToThreshold"
-  evaluation_periods  = "${var.high_eval_period}"
+  evaluation_periods  = "${var.high_eval_periods}"
   threshold           = "${var.queue_up_threshold}"
   alarm_actions       = ["${aws_appautoscaling_policy.scale_queuetime_up.arn}"]
   metric_query {
@@ -489,7 +489,7 @@ resource "aws_cloudwatch_metric_alarm" "queue_down" {
   alarm_name          = "${module.label.id}-sqs-queuetime-down"
   alarm_description   = "Alarm monitors ${var.queue_name} QueueTime = ((Queue Size * Worker Timing) / (number of current tasks * Number Of workers per task))"
   comparison_operator = "LessThanOrEqualToThreshold"
-  evaluation_periods  = "${var.low_eval_period}"
+  evaluation_periods  = "${var.low_eval_periods}"
   threshold           = "${var.queue_down_threshold}"
   alarm_actions       = ["${aws_appautoscaling_policy.scale_queuetime_down.arn}"]
   metric_query {
