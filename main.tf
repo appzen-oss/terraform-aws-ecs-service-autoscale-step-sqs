@@ -245,7 +245,7 @@ resource "aws_cloudwatch_metric_alarm" "service_queue_high" {
 
   alarm_name          = "${module.label.id}-sqs-up"
   alarm_description   = "This alarm monitors ${var.queue_name} Queue count utilization for scaling up"
-  comparison_operator = "GreaterThanThreshold"
+  comparison_operator = "GreaterThanOrEqualToThreshold"
   evaluation_periods  = "${var.high_eval_periods}"
   threshold           = "${var.high_threshold}"
   alarm_actions       = ["${aws_appautoscaling_policy.scale_up.arn}"]
